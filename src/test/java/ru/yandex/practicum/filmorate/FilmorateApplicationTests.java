@@ -1,10 +1,10 @@
-package ru.yandex.practicum.fimorate;
+package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FimorateApplicationTests {
+class FilmorateApplicationTests {
 
 	@Test
 	void contextLoads() {
