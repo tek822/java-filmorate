@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
     private final Map<Integer, Film> films = new HashMap<>();
+    private int nextID = 0;
 
     @GetMapping
     public List<Film> getUsers() {
@@ -22,12 +24,23 @@ public class FilmController {
 
     @PostMapping
     public Film addUser(@RequestBody Film film) {
+        film.setId(nextID++);
+        films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
     public Film updateUser(@RequestBody Film film) {
+        int id = film.getId();
+        if (films.containsKey(id)) {
+            films.replace(id, film);
+        } else {
+
+        }
         return film;
     }
-}
 
+    private void validateFilm(Film film) throws ValidationException {
+
+    }
+}
