@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
-    private int nextId = 0;
+    private int nextId = 1;
 
     @GetMapping
     public List<User> getUsers() {
@@ -24,6 +24,9 @@ public class UserController {
 
     @PostMapping
     public User addUser(@RequestBody User user) {
+        if (!UserValidator.isValid(user)) {
+            throw new ValidationException("");
+        }
         user.setId(nextId++);
         users.put(user.getId(), user);
         return user;
@@ -35,12 +38,8 @@ public class UserController {
         if (users.containsKey(id)) {
             users.replace(id, user);
         } else {
-
+            throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
         }
         return user;
-    }
-
-    private void validateUser(User user) throws ValidationException {
-
     }
 }
