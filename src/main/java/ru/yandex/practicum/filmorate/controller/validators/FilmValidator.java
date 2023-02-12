@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public class FilmValidator {
     static final int MAX_DESCRIPTION_LENGTH = 200;
-    static final LocalDate ERA_BEGIN = LocalDate.of(1985, 12, 28);
+    static final LocalDate ERA_BEGIN = LocalDate.of(1895, 12, 28);
 
     public static boolean isValid (Film film) {
         return isNameValid(film) && isDescriptionValid(film) &&
