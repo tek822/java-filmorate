@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.controller.validators.FilmValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -18,29 +19,31 @@ public class FilmController {
     private int nextID = 1;
 
     @GetMapping
-    public List<Film> getUsers() {
+    public List<Film> getFilms() {
         return new ArrayList<>(films.values());
     }
 
     @PostMapping
-    public Film addUser(@RequestBody Film film) {
+    public Film addFilm(@RequestBody Film film) {
+        if (!FilmValidator.isValid(film)) {
+            throw new ValidationException("Данные фильма не прошли валидацию");
+        }
         film.setId(nextID++);
         films.put(film.getId(), film);
         return film;
     }
 
     @PutMapping
-    public Film updateUser(@RequestBody Film film) {
+    public Film updateFilm(@RequestBody Film film) {
+        if (!FilmValidator.isValid(film)) {
+            throw new ValidationException("Данные фильма не прошли валидацию");
+        }
         int id = film.getId();
         if (films.containsKey(id)) {
             films.replace(id, film);
         } else {
-
+            throw new IllegalArgumentException("Фильм с id: " + id + " отсутствует");
         }
         return film;
-    }
-
-    private void validateFilm(Film film) throws ValidationException {
-
     }
 }

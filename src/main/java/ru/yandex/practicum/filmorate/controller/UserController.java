@@ -26,7 +26,7 @@ public class UserController {
     @PostMapping
     public User addUser(@RequestBody User user) {
         if (!UserValidator.isValid(user)) {
-            throw new ValidationException("");
+            throw new ValidationException("Данные пользователя не прошли валидацию");
         }
         user.setId(nextId++);
         users.put(user.getId(), user);
@@ -36,7 +36,7 @@ public class UserController {
     @PutMapping
     public User updateUser(@RequestBody User user) {
         if (!UserValidator.isValid(user)) {
-            throw new ValidationException("");
+            throw new ValidationException("Данные пользователя не прошли валидацию");
         }
         int id = user.getId();
         if (users.containsKey(id)) {
