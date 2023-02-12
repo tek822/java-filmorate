@@ -20,6 +20,7 @@ public class FilmController {
 
     @GetMapping
     public List<Film> getFilms() {
+        log.info("Текущее количество фильмов {}", films.size());
         return new ArrayList<>(films.values());
     }
 
@@ -30,6 +31,7 @@ public class FilmController {
         }
         film.setId(nextID++);
         films.put(film.getId(), film);
+        log.info("Добавлен фильм {}", film);
         return film;
     }
 
@@ -44,6 +46,7 @@ public class FilmController {
         } else {
             throw new IllegalArgumentException("Фильм с id: " + id + " отсутствует");
         }
+        log.info("Обновлены данные фильма {}", film);
         return film;
     }
 }
