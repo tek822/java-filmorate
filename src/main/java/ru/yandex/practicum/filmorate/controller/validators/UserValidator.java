@@ -34,7 +34,7 @@ public class UserValidator {
         return result;
     }
 
-    static boolean isNameValid (User user) {
+    public static boolean isNameValid (User user) {
         String name = user.getName();
         if (name == null || name.isBlank()) {
             log.debug("Имя пользователя отсутствует, используется login {}.", user);

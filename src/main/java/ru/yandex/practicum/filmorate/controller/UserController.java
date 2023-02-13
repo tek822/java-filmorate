@@ -1,17 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -32,6 +29,7 @@ public class UserController {
 //        if (!UserValidator.isValid(user)) {
 //            throw new ValidationException("Данные пользователя не прошли валидацию");
 //        }
+        UserValidator.isNameValid(user);
         user.setId(nextId++);
         users.put(user.getId(), user);
         log.info("Добавлен пользователь {}.", user);
@@ -43,6 +41,7 @@ public class UserController {
 //        if (!UserValidator.isValid(user)) {
 //            throw new ValidationException("Данные пользователя не прошли валидацию");
 //        }
+        UserValidator.isNameValid(user);
         int id = user.getId();
         if (users.containsKey(id)) {
             users.replace(id, user);
