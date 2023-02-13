@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
@@ -19,7 +20,6 @@ import java.util.Map;
 public class UserController {
     private final Map<Integer, User> users = new HashMap<>();
     private int nextId = 1;
-    //private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping
     public List<User> getUsers() {
@@ -28,10 +28,10 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) {
-        if (!UserValidator.isValid(user)) {
-            throw new ValidationException("Данные пользователя не прошли валидацию");
-        }
+    public User addUser(@Valid @RequestBody User user) {
+//        if (!UserValidator.isValid(user)) {
+//            throw new ValidationException("Данные пользователя не прошли валидацию");
+//        }
         user.setId(nextId++);
         users.put(user.getId(), user);
         log.info("Добавлен пользователь {}.", user);
@@ -39,10 +39,10 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        if (!UserValidator.isValid(user)) {
-            throw new ValidationException("Данные пользователя не прошли валидацию");
-        }
+    public User updateUser(@Valid @RequestBody User user) {
+//        if (!UserValidator.isValid(user)) {
+//            throw new ValidationException("Данные пользователя не прошли валидацию");
+//        }
         int id = user.getId();
         if (users.containsKey(id)) {
             users.replace(id, user);

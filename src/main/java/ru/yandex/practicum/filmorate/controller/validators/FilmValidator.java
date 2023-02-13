@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Slf4j
 public class FilmValidator {
     static final int MAX_DESCRIPTION_LENGTH = 200;
-    static final LocalDate ERA_BEGIN = LocalDate.of(1895, 12, 28);
+    public static final LocalDate CINEMA_ERA_BEGIN = LocalDate.of(1895, 12, 28);
 
     public static boolean isValid (Film film) {
         log.info("Обрабатываются данные фильма {}", film);
@@ -36,7 +36,7 @@ public class FilmValidator {
 
     static boolean isReleaseDateValid(Film film) {
         LocalDate releaseDate = film.getReleaseDate();
-        boolean result = releaseDate != null && ERA_BEGIN.isBefore(releaseDate);
+        boolean result = releaseDate != null && CINEMA_ERA_BEGIN.isBefore(releaseDate);
         if (!result) {
             log.debug("Ошибка в поле releaseDate фильма {}", film);
         }

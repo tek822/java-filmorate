@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.FilmValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,10 +26,10 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film addFilm(@RequestBody Film film) {
-        if (!FilmValidator.isValid(film)) {
-            throw new ValidationException("Данные фильма не прошли валидацию");
-        }
+    public Film addFilm(@Valid @RequestBody Film film) {
+//        if (!FilmValidator.isValid(film)) {
+//            throw new ValidationException("Данные фильма не прошли валидацию");
+//        }
         film.setId(nextID++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
@@ -36,10 +37,10 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@RequestBody Film film) {
-        if (!FilmValidator.isValid(film)) {
-            throw new ValidationException("Данные фильма не прошли валидацию");
-        }
+    public Film updateFilm(@Valid @RequestBody Film film) {
+//        if (!FilmValidator.isValid(film)) {
+//            throw new ValidationException("Данные фильма не прошли валидацию");
+//        }
         int id = film.getId();
         if (films.containsKey(id)) {
             films.replace(id, film);
