@@ -32,7 +32,7 @@ public class FilmValidatorTest {
     public void isDescriptionValidTest() {
         Film film = new Film();
         byte[] chars = new byte[MAX_DESCRIPTION_LENGTH + 1];
-        Arrays.fill(chars, (byte) 41);
+        Arrays.fill(chars, (byte) 0x40);
         String description = new String(chars);
         film.setDescription(description);
         assertFalse(FilmValidator.isDescriptionValid(film), "Описание фильма должно быть короче " +
