@@ -27,9 +27,9 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-//        if (!FilmValidator.isValid(film)) {
-//            throw new ValidationException("Данные фильма не прошли валидацию");
-//        }
+        if (!FilmValidator.isValid(film)) {
+            throw new ValidationException("Данные фильма не прошли валидацию");
+        }
         film.setId(nextID++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
@@ -38,11 +38,11 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-//        if (!FilmValidator.isValid(film)) {
-//            throw new ValidationException("Данные фильма не прошли валидацию");
-//        }
         int id = film.getId();
         if (films.containsKey(id)) {
+            if (!FilmValidator.isValid(film)) {
+                throw new ValidationException("Данные фильма не прошли валидацию");
+             }
             films.replace(id, film);
         } else {
             throw new IllegalArgumentException("Фильм с id: " + id + " отсутствует");

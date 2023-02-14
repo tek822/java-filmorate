@@ -16,5 +16,5 @@ public class Film {
     @ReleaseDateConstraint
     private LocalDate releaseDate;
     @Positive
-    private Integer duration; //minutes
+    private int duration; //minutes
 }

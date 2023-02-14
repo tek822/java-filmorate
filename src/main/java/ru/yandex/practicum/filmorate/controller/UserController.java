@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -26,9 +27,9 @@ public class UserController {
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-//        if (!UserValidator.isValid(user)) {
-//            throw new ValidationException("Данные пользователя не прошли валидацию");
-//        }
+        if (!UserValidator.isValid(user)) {
+            throw new ValidationException("Данные пользователя не прошли валидацию");
+        }
         UserValidator.isNameValid(user);
         user.setId(nextId++);
         users.put(user.getId(), user);
@@ -38,12 +39,11 @@ public class UserController {
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-//        if (!UserValidator.isValid(user)) {
-//            throw new ValidationException("Данные пользователя не прошли валидацию");
-//        }
-        UserValidator.isNameValid(user);
         int id = user.getId();
         if (users.containsKey(id)) {
+            if (!UserValidator.isValid(user)) {
+                throw new ValidationException("Данные пользователя не прошли валидацию");
+             }
             users.replace(id, user);
         } else {
             throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");

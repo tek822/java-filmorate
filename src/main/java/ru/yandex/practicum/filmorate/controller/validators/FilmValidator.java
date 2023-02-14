@@ -44,8 +44,8 @@ public class FilmValidator {
     }
 
     static boolean isDurationValid(Film film) {
-        Integer duration = film.getDuration();
-        boolean result = duration != null && duration > 0;
+        int duration = film.getDuration();
+        boolean result = duration > 0;
         if (!result) {
             log.debug("Ошибка в поле duration фильма {}", film);
         }
