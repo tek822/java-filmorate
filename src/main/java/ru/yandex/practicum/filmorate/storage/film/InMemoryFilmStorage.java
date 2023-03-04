@@ -25,7 +25,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         film.setId(nextID++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
-        return null;
+        return film;
     }
 
     @Override
@@ -37,7 +37,6 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
         }
         log.info("Удален фильм {}", film);
-
         return film;
     }
 

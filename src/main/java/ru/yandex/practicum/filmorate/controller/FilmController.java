@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -21,7 +21,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public List<Film> getFilms() {
+    public Set<Film> getFilms() {
         return filmService.getFilms();
     }
 
