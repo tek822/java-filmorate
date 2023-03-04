@@ -1,54 +1,37 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
-import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int nextId = 1;
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> getUsers() {
-        log.info("Текущее количество пользователей {}", users.size());
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
     }
 
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
-        if (!UserValidator.isValid(user)) {
-            throw new ValidationException("Данные пользователя не прошли валидацию");
-        }
-        UserValidator.isNameValid(user);
-        user.setId(nextId++);
-        users.put(user.getId(), user);
-        log.info("Добавлен пользователь {}.", user);
-        return user;
+        return userService.addUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
-        int id = user.getId();
-        if (users.containsKey(id)) {
-            if (!UserValidator.isValid(user)) {
-                throw new ValidationException("Данные пользователя не прошли валидацию");
-             }
-            users.replace(id, user);
-        } else {
-            throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
-        }
-        log.info("Обновлены данные пользователя {}", user);
-        return user;
+        return userService.updateUser(user);
     }
 }
