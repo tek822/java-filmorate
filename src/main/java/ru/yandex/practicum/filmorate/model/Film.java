@@ -21,4 +21,16 @@ public class Film {
     @Positive
     private int duration; //minutes
     private Set<Integer> likes;
+
+    public Set<Integer> getLikes() {
+        return likes;
+    }
+
+    public void addLike(int uid) {
+        likes.add(uid);
+    }
+
+    boolean removeLike(int uid) {
+        return likes.remove(uid);
+    }
 }

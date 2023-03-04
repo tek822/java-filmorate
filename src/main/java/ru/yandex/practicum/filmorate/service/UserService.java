@@ -50,8 +50,8 @@ public class UserService {
     public User deleteFriend(int userId, int friendId) {
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        user.deleteFriend(friendId);
-        friend.deleteFriend(userId);
+        user.removeFriend(friendId);
+        friend.removeFriend(userId);
         return user;
     }
 
