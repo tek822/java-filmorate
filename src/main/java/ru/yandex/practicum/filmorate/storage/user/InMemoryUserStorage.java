@@ -2,7 +2,8 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.controller.exceptions.ValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -31,7 +32,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(id)) {
             users.remove(id);
         } else {
-            throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
+            throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
         log.info("Удален пользователь {}", user);
         return user;
@@ -46,7 +47,7 @@ public class InMemoryUserStorage implements UserStorage {
             }
             users.replace(id, user);
         } else {
-            throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
+            throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
         log.info("Обновлены данные пользователя {}", user);
         return user;
@@ -57,7 +58,7 @@ public class InMemoryUserStorage implements UserStorage {
         if (users.containsKey(id)) {
             return users.get(id);
         } else {
-            throw new IllegalArgumentException("Пользователь с id: " + id + " отсутствует");
+            throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
     }
 
