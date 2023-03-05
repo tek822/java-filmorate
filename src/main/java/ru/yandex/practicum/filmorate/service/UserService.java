@@ -3,14 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -68,11 +66,20 @@ public class UserService {
     public Set<User> getCommonFriends(int user1Id, int user2Id) {
         Set<Integer> friends1 = userStorage.getUser(user1Id).getFriends();
         Set<Integer> friends2 = userStorage.getUser(user2Id).getFriends();
-        Set<Integer> common = friends1.stream().filter(friends2::contains).collect(Collectors.toSet());
-        return idsToUsers(common);
+        if (friends1 == null || friends2 == null) {
+            return new HashSet<>(); //tests require empty json {}, not null
+        } else {
+            Set<Integer> common = friends1.stream().filter(friends2::contains).collect(Collectors.toSet());
+            return idsToUsers(common);
+        }
     }
 
     private Set<User> idsToUsers (Set<Integer> ids) {
-        return ids.stream().map(userStorage::getUser).collect(Collectors.toSet());
+        Set<User> set = new TreeSet<>(Comparator.comparingInt(User::getId));
+        set.addAll(ids.stream()
+                .map(userStorage::getUser)
+                .collect(Collectors.toSet())
+        );
+        return set;
     }
 }

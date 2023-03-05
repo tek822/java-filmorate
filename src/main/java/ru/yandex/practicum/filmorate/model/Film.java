@@ -2,11 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import ru.yandex.practicum.filmorate.controller.validators.ReleaseDateConstraint;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -20,7 +22,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
-    private Set<Integer> likes;
+    private Set<Integer> likes = new HashSet<>();
 
     public Set<Integer> getLikes() {
         return likes;
@@ -30,7 +32,9 @@ public class Film {
         likes.add(uid);
     }
 
-    public boolean deleteLike(int uid) {
-        return likes.remove(uid);
+    public void deleteLike(int uid) {
+        if (false == likes.remove(uid)) {
+            throw new UserNotFoundException("Лайк от пользователя с id: " + uid + "не найден");
+        }
     }
 }
