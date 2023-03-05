@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final static int MOST_POPULAR = 10;
 
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
@@ -23,6 +22,10 @@ public class FilmService {
         return filmStorage.getFilms();
     }
 
+    public Film getFilm(int id) {
+        return filmStorage.getFilm(id);
+    }
+
     public Film addFilm(Film film) {
         return filmStorage.addFilm(film);
     }
@@ -31,14 +34,22 @@ public class FilmService {
         return filmStorage.updateFilm(film);
     }
 
-    public void addLike(Film film, int uid) {
-        filmStorage.getFilm(film.getId()).addLike(uid);
+    public Film addLike(int filmId, int uid) {
+        Film film = filmStorage.getFilm(filmId);
+        film.addLike(uid);
+        return film;
     }
 
-    public Set<Film> getMostPopular() {
+    public Film deleteLike(int id, int userId) {
+        Film film = filmStorage.getFilm(id);
+        film.deleteLike(userId);
+        return film;
+    }
+
+    public Set<Film> getMostPopular(int amount) {
         return filmStorage.getFilms().stream()
-                .sorted( (f0, f1) -> {return f1.getLikes().size() - f0.getLikes().size();})
-                .limit(MOST_POPULAR)
+                .sorted( (f0, f1) -> f1.getLikes().size() - f0.getLikes().size())
+                .limit(amount)
                 .collect(Collectors.toSet());
     }
 }

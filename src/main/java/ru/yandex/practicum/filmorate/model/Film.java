@@ -30,7 +30,7 @@ public class Film {
         likes.add(uid);
     }
 
-    boolean removeLike(int uid) {
+    public boolean deleteLike(int uid) {
         return likes.remove(uid);
     }
 }

@@ -27,6 +27,10 @@ public class UserService {
         return userStorage.getUsers();
     }
 
+    public User getUser(int id) {
+        return userStorage.getUser(id);
+    }
+
     public User addUser(User user) {
         if (!UserValidator.isValid(user)) {
             throw new ValidationException("Данные пользователя не прошли валидацию");
@@ -50,8 +54,8 @@ public class UserService {
     public User deleteFriend(int userId, int friendId) {
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        user.removeFriend(friendId);
-        friend.removeFriend(userId);
+        user.deleteFriend(friendId);
+        friend.deleteFriend(userId);
         return user;
     }
 
@@ -68,6 +72,6 @@ public class UserService {
     }
 
     private Set<User> idsToUsers (Set<Integer> ids) {
-        return ids.stream().map(id -> userStorage.getUser(id)).collect(Collectors.toSet());
+        return ids.stream().map(userStorage::getUser).collect(Collectors.toSet());
     }
 }

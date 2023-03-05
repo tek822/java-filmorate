@@ -28,7 +28,7 @@ public class User {
         return friends;
     }
 
-    public boolean removeFriend(int id) {
+    public boolean deleteFriend(int id) {
         return friends.remove(id);
     }
 }
