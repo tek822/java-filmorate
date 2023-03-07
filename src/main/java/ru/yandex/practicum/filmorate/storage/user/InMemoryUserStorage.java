@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -27,13 +25,12 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User deleteUser(User user) {
-        int id = user.getId();
-        if (users.containsKey(id)) {
-            users.remove(id);
-        } else {
+    public User deleteUser(int id) {
+        User user = users.get(id);
+        if (user == null) {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
+        users.remove(id);
         log.info("Удален пользователь {}", user);
         return user;
     }
@@ -41,25 +38,20 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public User updateUser(User user) {
         int id = user.getId();
-        if (users.containsKey(id)) {
-            if (!UserValidator.isValid(user)) {
-                throw new ValidationException("Данные пользователя не прошли валидацию");
-            }
-            users.replace(id, user);
-        } else {
+        if (!users.containsKey(id)) {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
+        users.replace(id, user);
         log.info("Обновлены данные пользователя {}", user);
         return user;
     }
 
     @Override
     public User getUser(int id) {
-        if (users.containsKey(id)) {
-            return users.get(id);
-        } else {
+        if (!users.containsKey(id)) {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
+        return users.get(id);
     }
 
     @Override

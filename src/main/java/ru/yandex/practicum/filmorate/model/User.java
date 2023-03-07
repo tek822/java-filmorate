@@ -19,7 +19,7 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
-    private Set<Integer> friends = new HashSet<>();
+    final private Set<Integer> friends = new HashSet<>();
 
     public void addFriend(int friendId) {
         friends.add(friendId);

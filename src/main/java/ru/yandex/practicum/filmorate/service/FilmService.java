@@ -1,7 +1,11 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.controller.validators.FilmValidator;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -13,6 +17,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
 
+    @Autowired
     public FilmService(FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
@@ -27,10 +32,16 @@ public class FilmService {
     }
 
     public Film addFilm(Film film) {
+        if (!FilmValidator.isValid(film)) {
+            throw new ValidationException("Данные фильма не прошли валидацию");
+        }
         return filmStorage.addFilm(film);
     }
 
     public Film updateFilm(Film film) {
+        if (!FilmValidator.isValid(film)) {
+            throw new ValidationException("Данные фильма не прошли валидацию");
+        }
         return filmStorage.updateFilm(film);
     }
 
@@ -42,7 +53,9 @@ public class FilmService {
 
     public Film deleteLike(int id, int userId) {
         Film film = filmStorage.getFilm(id);
-        film.deleteLike(userId);
+        if (false == film.deleteLike(userId)) {
+            throw new UserNotFoundException("Лайк от пользователя с id: " + userId + "не найден");
+        }
         return film;
     }
 

@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.controller.validators.FilmValidator;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.HashMap;
@@ -20,9 +18,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Film addFilm(Film film) {
-        if (!FilmValidator.isValid(film)) {
-            throw new ValidationException("Данные фильма не прошли валидацию");
-        }
         film.setId(nextID++);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
@@ -30,13 +25,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film deleteFilm(Film film) {
-        int id = film.getId();
-        if (films.containsKey(id)) {
-            films.remove(id);
-        } else {
+    public Film deleteFilm(int id) {
+        Film film = films.get(id);
+        if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
+        films.remove(id);
         log.info("Удален фильм {}", film);
         return film;
     }
@@ -44,25 +38,20 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         int id = film.getId();
-        if (films.containsKey(id)) {
-            if (!FilmValidator.isValid(film)) {
-                throw new ValidationException("Данные фильма не прошли валидацию");
-            }
-            films.replace(id, film);
-        } else {
+        if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
+        films.replace(id, film);
         log.info("Обновлены данные фильма {}", film);
         return film;
     }
 
     @Override
     public Film getFilm(int id) {
-        if (films.containsKey(id)) {
-            return films.get(id);
-        } else {
+        if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
+        return films.get(id);
     }
 
     @Override
@@ -72,6 +61,6 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public int size() {
-        return 0;
+        return films.size();
     }
 }

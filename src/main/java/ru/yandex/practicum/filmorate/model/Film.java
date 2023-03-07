@@ -22,7 +22,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
-    private Set<Integer> likes = new HashSet<>();
+    final private Set<Integer> likes = new HashSet<>();
 
     public Set<Integer> getLikes() {
         return likes;
@@ -32,9 +32,7 @@ public class Film {
         likes.add(uid);
     }
 
-    public void deleteLike(int uid) {
-        if (false == likes.remove(uid)) {
-            throw new UserNotFoundException("Лайк от пользователя с id: " + uid + "не найден");
-        }
+    public boolean deleteLike(int uid) {
+        return likes.remove(uid);
     }
 }

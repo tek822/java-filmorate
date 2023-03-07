@@ -34,11 +34,13 @@ public class UserService {
         if (!UserValidator.isValid(user)) {
             throw new ValidationException("Данные пользователя не прошли валидацию");
         }
-        UserValidator.isNameValid(user);
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) {
+        if (!UserValidator.isValid(user)) {
+            throw new ValidationException("Данные пользователя не прошли валидацию");
+        }
         return userStorage.updateUser(user);
     }
 
@@ -66,12 +68,8 @@ public class UserService {
     public Set<User> getCommonFriends(int user1Id, int user2Id) {
         Set<Integer> friends1 = userStorage.getUser(user1Id).getFriends();
         Set<Integer> friends2 = userStorage.getUser(user2Id).getFriends();
-        if (friends1 == null || friends2 == null) {
-            return new HashSet<>(); //tests require empty json {}, not null
-        } else {
-            Set<Integer> common = friends1.stream().filter(friends2::contains).collect(Collectors.toSet());
-            return idsToUsers(common);
-        }
+        Set<Integer> common = friends1.stream().filter(friends2::contains).collect(Collectors.toSet());
+        return idsToUsers(common);
     }
 
     private Set<User> idsToUsers (Set<Integer> ids) {
