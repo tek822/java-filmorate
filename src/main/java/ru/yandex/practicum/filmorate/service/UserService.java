@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class UserService {
+    @Qualifier("DbStorage")
     private final UserStorage userStorage;
 
     @Autowired
