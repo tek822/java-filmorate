@@ -1,4 +1,4 @@
-INSERT INTO "genre" ("genre_id", "genre")
+INSERT INTO "GENRES" ("GENRE_ID", "GENRE")
 VALUES
     (1, 'Комедия'),
     (2, 'Драма'),
@@ -7,7 +7,7 @@ VALUES
     (5, 'Документальный'),
     (6, 'Боевик') ON CONFLICT DO NOTHING;
 
-INSERT INTO "rating" ("rating_id", "rating")
+INSERT INTO "RATINGS" ("RATING_ID", "RATING")
 VALUES
     (1, 'G'),
     (2, 'PG'),
