@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class FilmService {
     @Autowired
-    @Qualifier("FilmInMemoryStorage")
+    @Qualifier("FilmDbStorage")
     private final FilmStorage filmStorage;
 
     @Autowired

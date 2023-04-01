@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.Boolean.TRUE;
+
 @Slf4j
 @Service
 public class UserService {
@@ -50,8 +52,8 @@ public class UserService {
     public User addFriend(int userId, int friendId) {
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        user.addFriend(friendId);
-        friend.addFriend(userId);
+        user.addFriend(friendId, true);
+        friend.addFriend(userId, false);
         return user;
     }
 
@@ -64,13 +66,19 @@ public class UserService {
     }
 
     public Set<User> getFriends(int id) {
-        Set<Integer> friends = userStorage.getUser(id).getFriends();
-        return idsToUsers(friends);
+        return idsToUsers(getTrueFriendsIds(id));
+    }
+
+    private Set<Integer> getTrueFriendsIds(int id) {
+        return userStorage.getUser(id).getFriends().entrySet().stream()
+                .filter(e -> (TRUE == e.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     public Set<User> getCommonFriends(int user1Id, int user2Id) {
-        Set<Integer> friends1 = userStorage.getUser(user1Id).getFriends();
-        Set<Integer> friends2 = userStorage.getUser(user2Id).getFriends();
+        Set<Integer> friends1 = getTrueFriendsIds(user1Id);
+        Set<Integer> friends2 = getTrueFriendsIds(user2Id);
         Set<Integer> common = friends1.stream().filter(friends2::contains).collect(Collectors.toSet());
         return idsToUsers(common);
     }

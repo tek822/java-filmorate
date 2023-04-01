@@ -7,7 +7,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -21,17 +23,17 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
-    final private Set<Integer> friends = new HashSet<>();
+    final private Map<Integer, Boolean> friends = new HashMap<>();
 
-    public void addFriend(int friendId) {
-        friends.add(friendId);
+    public void addFriend(int friendId, boolean status) {
+        friends.put(friendId, status);
     }
 
-    public Set<Integer> getFriends() {
+    public Map<Integer, Boolean> getFriends() {
         return friends;
     }
 
-    public boolean deleteFriend(int id) {
+    public  Boolean deleteFriend(int id) {
         return friends.remove(id);
     }
 }

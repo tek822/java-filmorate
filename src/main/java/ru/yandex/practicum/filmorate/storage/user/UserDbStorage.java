@@ -13,7 +13,9 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -90,7 +92,7 @@ public class UserDbStorage implements UserStorage {
         }
 
         if (user != null) {
-            user.getFriends().addAll(getFriends(id));
+            user.getFriends().putAll(getFriends(id));
         } else {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
@@ -122,18 +124,22 @@ public class UserDbStorage implements UserStorage {
         return values;
     }
 
-    private Set<Integer> getFriends(int id) {
-        String sql = "SELECT F.FRIEND_ID FROM FRIENDS AS F WHERE USER_ID = ?";
-        Collection<Integer> friends = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
-        return new HashSet<>(friends);
+    private Map<Integer, Boolean> getFriends(int id) {
+        String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ? ";
+        Map <Integer, Boolean> friends = new HashMap<>();
+        Collection<Map.Entry<Integer, Boolean>> col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
+        for (Map.Entry<Integer, Boolean> e : col) {
+            friends.put(e.getKey(), e.getValue());
+        }
+        return friends;
     }
 
     private Integer getCount(ResultSet resultSet) throws SQLException {
         return resultSet.getInt("COUNT");
     }
 
-    private Integer getFriend(ResultSet resultSet) throws SQLException {
-        return resultSet.getInt("FRIEND_ID");
+    private Map.Entry<Integer, Boolean> getFriend(ResultSet resultSet) throws SQLException {
+        return Map.entry(resultSet.getInt("FRIEND_ID"), resultSet.getBoolean("STATUS"));
     }
 
     private User makeUser(ResultSet resultSet) throws SQLException {
