@@ -11,7 +11,6 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
-//import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.*;
@@ -79,12 +78,12 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User getUser(int id) {
         String sql =
-                "SELECT U.* " +
-                "FROM USERS AS U "+
-                "WHERE U.USER_ID = ?";
+                "SELECT U.* "
+                + "FROM USERS AS U "
+                + "WHERE U.USER_ID = ?";
         User user = null;
         try {
-            Collection<User> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeUser(rs) , id);
+            Collection<User> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeUser(rs), id);
             user = collection.stream().findAny().get();
         } catch (RuntimeException e) {
             log.info("Error getUser with id = " + id + " : " +  e.getMessage());
@@ -102,11 +101,8 @@ public class UserDbStorage implements UserStorage {
     public List<User> getUsers() {
         String sql = "SELECT USER_ID FROM USERS";
         Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"));
-        return ids.stream().map(this::getUser)
-                .map((user) -> {
-                        user.getFriends().addAll(ids);
-                        return user;
-                    })
+        return ids.stream()
+                .map(this::getUser)
                 .collect(Collectors.toList());
     }
 
@@ -126,9 +122,9 @@ public class UserDbStorage implements UserStorage {
         return values;
     }
 
-    private Set<Integer> getFriends (int id) {
+    private Set<Integer> getFriends(int id) {
         String sql = "SELECT F.FRIEND_ID FROM FRIENDS AS F WHERE USER_ID = ?";
-        Collection<Integer> friends = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs) , id);
+        Collection<Integer> friends = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
         return new HashSet<>(friends);
     }
 

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,7 @@ public class FilmService {
         this.filmStorage = filmStorage;
     }
 
-    public Set<Film> getFilms() {
+    public List<Film> getFilms() {
         log.info("Текущее количество фильмов {}", filmStorage.size());
         return filmStorage.getFilms();
     }
@@ -56,7 +57,7 @@ public class FilmService {
 
     public Film deleteLike(int id, int userId) {
         Film film = filmStorage.getFilm(id);
-        if (false == film.deleteLike(userId)) {
+        if (!film.deleteLike(userId)) {
             throw new UserNotFoundException("Лайк от пользователя с id: " + userId + "не найден");
         }
         return film;

@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.controller.validators.ReleaseDateConstraint;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -12,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 public class Film {
     private int id;
     @NotBlank(message = "название фильма - обязательное поле")
@@ -22,7 +24,9 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
+    private String rating;
     final private Set<Integer> likes = new HashSet<>();
+    final private Set<String> genres = new HashSet<>();
 
     public Set<Integer> getLikes() {
         return likes;
@@ -34,5 +38,17 @@ public class Film {
 
     public boolean deleteLike(int uid) {
         return likes.remove(uid);
+    }
+
+    public Set<String> getGenres() {
+        return genres;
+    }
+
+    public void addGenre(String genre) {
+        genres.add(genre);
+    }
+
+    public boolean deleteGenre(String genre) {
+        return genres.remove(genre);
     }
 }
