@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @Qualifier("UserDbStorage")
-@Primary
 public class UserDbStorage implements UserStorage {
     @Autowired
     private final JdbcTemplate jdbcTemplate;
@@ -79,24 +77,28 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User getUser(int id) {
+        User user = null;
         String sql =
                 "SELECT U.* "
                 + "FROM USERS AS U "
                 + "WHERE U.USER_ID = ?";
-        User user = null;
         try {
             Collection<User> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeUser(rs), id);
             user = collection.stream().findAny().get();
         } catch (RuntimeException e) {
             log.info("Error getUser with id = " + id + " : " +  e.getMessage());
-        }
-
-        if (user != null) {
-            user.getFriends().putAll(getFriends(id));
-        } else {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
+        Map<Integer, Boolean> friendsFromDb = getFriends(id);
+        user.getFriends().putAll(friendsFromDb);
         return user;
+    }
+
+    @Override
+    public boolean containsUser(int id) {
+        String sql = "SELECT USER_ID FROM USERS WHERE USER_ID = ?";
+        Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"), id);
+        return ids.size() == 1;
     }
 
     @Override
@@ -127,10 +129,15 @@ public class UserDbStorage implements UserStorage {
     private Map<Integer, Boolean> getFriends(int id) {
         String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ? ";
         Map <Integer, Boolean> friends = new HashMap<>();
-        Collection<Map.Entry<Integer, Boolean>> col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
+        try {
+            Collection<Map.Entry<Integer, Boolean>> col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
+        } catch (RuntimeException e) {
+            throw new UserNotFoundException("Не найдены друзья пользователя с id " + id);
+        }
+        /*
         for (Map.Entry<Integer, Boolean> e : col) {
             friends.put(e.getKey(), e.getValue());
-        }
+        }*/
         return friends;
     }
 
@@ -139,6 +146,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Map.Entry<Integer, Boolean> getFriend(ResultSet resultSet) throws SQLException {
+        log.info("resultSet : " + resultSet.toString());
+        log.info("FRIEND_ID : " + resultSet.getInt("FRIEND_ID"));
         return Map.entry(resultSet.getInt("FRIEND_ID"), resultSet.getBoolean("STATUS"));
     }
 

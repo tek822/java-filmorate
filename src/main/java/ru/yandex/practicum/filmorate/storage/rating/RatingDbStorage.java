@@ -4,12 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,20 +34,24 @@ public class RatingDbStorage implements RatingStorage {
     @Override
     public Rating getRating(int id) {
         String sql = "SELECT R.RATING_ID, R.RATING FROM RATINGS AS R WHERE R.RATING_ID = ?";
-        return jdbcTemplate
-                .query(sql, (rs, rowNum) -> makeRating(rs), id)
-                .stream()
-                .findAny()
-                .get();
+        Rating rating = null;
+        try {
+        rating = jdbcTemplate
+            .query(sql, (rs, rowNum) -> makeRating(rs), id)
+            .stream()
+            .findAny()
+            .get();
+        } catch (RuntimeException e) {
+            throw new RatingNotFoundException("Рейтинг с id " + id + " не найден");
+        }
+        return rating;
     }
 
     @Override
     public List<Rating> getRatings() {
         String sql = "SELECT R.RATING_ID, R.RATING FROM RATINGS AS R";
-        return jdbcTemplate
-                .query(sql, (rs, rowNum) -> makeRating(rs))
-                .stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(jdbcTemplate
+                .query(sql, (rs, rowNum) -> makeRating(rs)));
     }
 
     @Override

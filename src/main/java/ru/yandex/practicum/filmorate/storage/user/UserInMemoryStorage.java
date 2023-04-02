@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -14,7 +15,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @Qualifier("UserInMemoryStorage")
-public class InMemoryUserStorage implements UserStorage {
+public class UserInMemoryStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private int nextId = 1;
 
@@ -54,6 +55,11 @@ public class InMemoryUserStorage implements UserStorage {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
         return users.get(id);
+    }
+
+    @Override
+    public boolean containsUser(int id) {
+        return users.containsKey(id);
     }
 
     @Override

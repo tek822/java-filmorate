@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @Service
 public class RatingService {
-    @Qualifier("RatingDbStorage")
     private final RatingStorage ratingStorage;
 
     @Autowired

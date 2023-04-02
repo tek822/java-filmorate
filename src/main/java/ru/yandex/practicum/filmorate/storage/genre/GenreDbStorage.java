@@ -4,12 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,20 +33,24 @@ public class GenreDbStorage implements GenreStorage {
     @Override
     public Genre getGenre(int id) {
         String sql = "SELECT G.GENRE_ID, G.GENRE FROM GENRES AS G WHERE G.GENRE_ID = ?";
-        return jdbcTemplate
+        Genre genre = null;
+        try {
+            genre = jdbcTemplate
                 .query(sql, (rs, rowNum) -> makeGenre(rs), id)
                 .stream()
                 .findAny()
                 .get();
+        } catch (RuntimeException e) {
+            throw new GenreNotFoundException("Жанр с id " + id + " не найден.");
+        }
+        return genre;
     }
 
     @Override
     public List<Genre> getGenres() {
         String sql = "SELECT G.GENRE_ID, G.GENRE FROM GENRES AS G";
-        return jdbcTemplate
-                .query(sql, (rs, rowNum) -> makeGenre(rs))
-                .stream()
-                .collect(Collectors.toList());
+        return new ArrayList<>(jdbcTemplate
+                .query(sql, (rs, rowNum) -> makeGenre(rs)));
     }
 
     @Override

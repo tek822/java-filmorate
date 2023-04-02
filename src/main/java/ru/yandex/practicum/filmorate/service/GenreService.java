@@ -12,11 +12,10 @@ import java.util.List;
 @Slf4j
 @Service
 public class GenreService {
-    @Qualifier("GenreDbStorage")
     private final GenreStorage genreStorage;
 
     @Autowired
-    public GenreService(GenreStorage genreStorage) {
+    public GenreService(@Qualifier("GenreDbStorage") GenreStorage genreStorage) {
         this.genreStorage = genreStorage;
     }
 

@@ -17,12 +17,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FilmService {
-    @Autowired
-    @Qualifier("FilmDbStorage")
     private final FilmStorage filmStorage;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("FilmInMemoryStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
