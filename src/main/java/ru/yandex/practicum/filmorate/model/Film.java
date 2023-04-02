@@ -9,7 +9,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,21 +26,10 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
-    private Mpa mpa;
-    final private Set<Integer> likes = new HashSet<>();
+    private Rating mpa;
+    private Set<Genre> genres = new HashSet<>();
+/*
     final private Set<String> genres = new HashSet<>();
-
-    public Set<Integer> getLikes() {
-        return likes;
-    }
-
-    public void addLike(int uid) {
-        likes.add(uid);
-    }
-
-    public boolean deleteLike(int uid) {
-        return likes.remove(uid);
-    }
 
     public Set<String> getGenres() {
         return genres;
@@ -51,4 +42,6 @@ public class Film {
     public boolean deleteGenre(String genre) {
         return genres.remove(genre);
     }
+    */
+
 }

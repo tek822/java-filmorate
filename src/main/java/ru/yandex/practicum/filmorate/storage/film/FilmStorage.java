@@ -10,5 +10,6 @@ public interface FilmStorage {
     Film updateFilm(Film film);
     Film getFilm(int id);
     List<Film> getFilms();
+    boolean containsFilm(int id);
     int size();
 }

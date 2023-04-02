@@ -1,10 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 
 import java.util.*;
 
@@ -12,12 +16,20 @@ import java.util.*;
 @Component
 @Qualifier("FilmInMemoryStorage")
 public class FilmInMemoryStorage implements FilmStorage {
+    @Autowired
+    @Qualifier("RatingDbStorage")
+    private RatingStorage ratingStorage;
+    @Autowired
+    @Qualifier("GenreDbStorage")
+    private GenreStorage genreStorage;
+
     private final Map<Integer, Film> films = new HashMap<>();
     private int nextID = 1;
 
     @Override
     public Film addFilm(Film film) {
         film.setId(nextID++);
+        fillMpaGenres(film);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
         return film;
@@ -40,6 +52,7 @@ public class FilmInMemoryStorage implements FilmStorage {
         if (!films.containsKey(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
+        fillMpaGenres(film);
         films.replace(id, film);
         log.info("Обновлены данные фильма {}", film);
         return film;
@@ -59,7 +72,25 @@ public class FilmInMemoryStorage implements FilmStorage {
     }
 
     @Override
+    public boolean containsFilm(int id) {
+        return films.containsKey(id);
+    }
+
+    @Override
     public int size() {
         return films.size();
+    }
+
+    private void fillMpaGenres(Film film) {
+        if (film.getMpa() != null) {
+            film.setMpa(ratingStorage.getRating(film.getMpa().getId()));
+        }
+        if (film.getGenres() != null) {
+            for (Genre g : film.getGenres()) {
+                g.setName(genreStorage.getGenre(g.getId()).getName());
+            }
+        } else {
+            film.setGenres(new HashSet<>());
+        }
     }
 }

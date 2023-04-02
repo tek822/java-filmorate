@@ -1,12 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.friend;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,12 +13,6 @@ import java.util.stream.Collectors;
 @Component("FriendInMemoryStorage")
 public class FriendInMemoryStorage implements FriendStorage {
     private final Map<Integer, Set<Integer>> friends = new HashMap<>();
-    private final UserStorage userStorage;
-
-    @Autowired
-    public FriendInMemoryStorage(@Qualifier("UserDbStorage") UserStorage userStorage) {
-        this.userStorage = userStorage;
-    }
 
     @Override
     public void addFriend(int userId, int friendId) {

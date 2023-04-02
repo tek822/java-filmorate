@@ -3,12 +3,9 @@ package ru.yandex.practicum.filmorate.storage.rating;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.sql.ResultSet;
@@ -16,12 +13,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-@Qualifier("GenreDbStorage")
-@Primary
+@Qualifier("RatingDbStorage")
 public class RatingDbStorage implements RatingStorage {
 
     private final JdbcTemplate jdbcTemplate;
