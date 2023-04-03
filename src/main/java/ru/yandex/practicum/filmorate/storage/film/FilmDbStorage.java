@@ -9,9 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -78,8 +76,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         int id = film.getId();
-        Film oldfilm = getFilm(id);
-        if (oldfilm == null) {
+        if (!containsFilm(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
         String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?," +
@@ -103,8 +100,13 @@ public class FilmDbStorage implements FilmStorage {
             for (Genre g : film.getGenres()) {
                 jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
             }
+            film.setGenres(getGenres(film.getId()));
         } else {
             film.setGenres(new HashSet<Genre>());
+        }
+        if (film.getMpa() != null) {
+            int mpaId = film.getMpa().getId();
+            film.setMpa(ratingStorage.getRating(mpaId));
         }
         log.info("Обновлены данные фильма {}", film);
         return film;
@@ -120,17 +122,8 @@ public class FilmDbStorage implements FilmStorage {
         } catch (RuntimeException e) {
             log.info("Error getFilm with id = " + id + " : " +  e.getMessage());
         }
-        if (film != null) {
-            if (film.getGenres() != null) {
-                film.setGenres(getGenres(film.getId()));
-            } else {
-                film.setGenres(new HashSet<Genre>());
-            }
-            return film;
-        } else {
-            throw new FilmNotFoundException("Фильм с id : " + id + " не найденю");
-        }
-
+        film.setGenres(getGenres(id));
+        return film;
     }
 
     @Override
@@ -157,15 +150,25 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Set<Genre> getGenres(int id) {
+        Collection<Genre> genres = null;
         String sql = "SELECT F.GENRE_ID, G.GENRE " +
                 "FROM FILM_GENRES AS F " +
-                "JOIN GENRES AS G ON F.GENRE_ID = G.GENRE_ID" +
+                "JOIN GENRES AS G ON F.GENRE_ID = G.GENRE_ID " +
                 "WHERE F.FILM_ID = ?";
-        Collection<Genre> genres = jdbcTemplate.query(sql,
-                (rs, rowNumber) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE")),
-                id);
-        return new HashSet<>(genres);
+        try {
+            genres = jdbcTemplate.query(sql,
+                    (rs, rowNumber) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE")),
+                    id);
+        } catch (RuntimeException e) {
+            throw new ru.yandex.practicum.filmorate.exception.SQLException("SQL in FilmDbStorage.getGenres");
+        }
+        Set<Genre> set = new HashSet<>(genres);
+        return set;
     }
+
+    /*private getMpa(int id) {
+
+    }*/
 
     private Map<String, Object> filmToMap (Film film) {
         Map<String, Object> values = new HashMap<>();
@@ -178,8 +181,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet resultSet) throws SQLException {
-        int ratingId = resultSet.getInt("RATING_ID");
-        Rating rating = ratingStorage.getRating(ratingId);
+        //int ratingId = resultSet.getInt("RATING_ID");
+        //Rating rating = ratingStorage.getRating(ratingId);
         Film film = Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))
