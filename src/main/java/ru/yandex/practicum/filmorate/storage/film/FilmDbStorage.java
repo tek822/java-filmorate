@@ -21,16 +21,16 @@ import java.util.stream.Collectors;
 @Qualifier("FilmDbStorage")
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
-    @Autowired
-    @Qualifier("RatingDbStorage")
     private RatingStorage ratingStorage;
-    @Autowired
-    @Qualifier("GenreDbStorage")
     private GenreStorage genreStorage;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate) {
+    public FilmDbStorage(JdbcTemplate jdbcTemplate,
+                         @Qualifier("RatingDbStorage") RatingStorage ratingStorage,
+                         @Qualifier("GenreDbStorage") GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
+        this.ratingStorage = ratingStorage;
+        this.genreStorage = genreStorage;
     }
 
     @Override

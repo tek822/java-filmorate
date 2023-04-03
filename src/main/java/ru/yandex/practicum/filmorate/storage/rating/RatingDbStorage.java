@@ -17,7 +17,6 @@ import java.util.List;
 @Component
 @Qualifier("RatingDbStorage")
 public class RatingDbStorage implements RatingStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

@@ -10,8 +10,12 @@ import java.util.*;
 @Slf4j
 @Component("LikeDbStorage")
 public class LikeDbStorage implements LikeStorage {
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    public LikeDbStorage(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public void addLike(int fid, int uid) {

@@ -17,7 +17,6 @@ import java.util.List;
 @Component
 @Qualifier("GenreDbStorage")
 public class GenreDbStorage implements GenreStorage {
-
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

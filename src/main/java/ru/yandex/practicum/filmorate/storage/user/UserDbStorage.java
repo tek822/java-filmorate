@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 @Component
 @Qualifier("UserDbStorage")
 public class UserDbStorage implements UserStorage {
-    @Autowired
     private final JdbcTemplate jdbcTemplate;
 
+    @Autowired
     public UserDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

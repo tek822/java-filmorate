@@ -15,15 +15,17 @@ import java.util.*;
 @Component
 @Qualifier("FilmInMemoryStorage")
 public class FilmInMemoryStorage implements FilmStorage {
-    @Autowired
-    @Qualifier("RatingDbStorage")
-    private RatingStorage ratingStorage;
-    @Autowired
-    @Qualifier("GenreDbStorage")
-    private GenreStorage genreStorage;
-
+    private final RatingStorage ratingStorage;
+    private final GenreStorage genreStorage;
     private final Map<Integer, Film> films = new HashMap<>();
     private int nextId = 1;
+
+    @Autowired
+    public FilmInMemoryStorage(@Qualifier("RatingDbStorage") RatingStorage ratingStorage,
+                               @Qualifier("GenreDbStorage")GenreStorage genreStorage) {
+        this.ratingStorage = ratingStorage;
+        this.genreStorage = genreStorage;
+    }
 
     @Override
     public Film addFilm(Film film) {
