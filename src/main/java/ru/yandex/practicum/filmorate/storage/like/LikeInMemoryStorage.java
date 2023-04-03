@@ -10,7 +10,7 @@ import java.util.Set;
 @Component
 @Qualifier("LikeInMemoryStorage")
 public class LikeInMemoryStorage implements LikeStorage {
-    final private Map<Integer, Set<Integer>> likes = new HashMap<>();
+    private final Map<Integer, Set<Integer>> likes = new HashMap<>();
 
     public void addLike(int fid, int uid) {
         if (likes.containsKey(fid)) {
