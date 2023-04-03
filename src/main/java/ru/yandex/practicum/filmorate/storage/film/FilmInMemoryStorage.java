@@ -23,11 +23,11 @@ public class FilmInMemoryStorage implements FilmStorage {
     private GenreStorage genreStorage;
 
     private final Map<Integer, Film> films = new HashMap<>();
-    private int nextID = 1;
+    private int nextId = 1;
 
     @Override
     public Film addFilm(Film film) {
-        film.setId(nextID++);
+        film.setId(nextId++);
         fillMpaGenres(film);
         films.put(film.getId(), film);
         log.info("Добавлен фильм {}", film);
