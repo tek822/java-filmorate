@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -127,17 +126,13 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Map<Integer, Boolean> getFriends(int id) {
-        String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ? ";
-        Map <Integer, Boolean> friends = new HashMap<>();
+        String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ?";
+        Map<Integer, Boolean> friends = new HashMap<>();
         try {
             Collection<Map.Entry<Integer, Boolean>> col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
         } catch (RuntimeException e) {
             throw new UserNotFoundException("Не найдены друзья пользователя с id " + id);
         }
-        /*
-        for (Map.Entry<Integer, Boolean> e : col) {
-            friends.put(e.getKey(), e.getValue());
-        }*/
         return friends;
     }
 

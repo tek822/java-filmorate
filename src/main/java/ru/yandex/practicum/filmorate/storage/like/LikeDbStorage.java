@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.SQLException;
-
 import java.util.*;
 
 @Slf4j
@@ -45,11 +44,11 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public Map<Integer, Integer> getMostPopular(int amount) {
-        String sql = "SELECT L.FILM_ID, COUNT(L.USER_ID) as AMOUNT " +
-                        "FROM LIKES AS L " +
-                        "GROUP BY L.FILM_ID " +
-                        "ORDER BY COUNT(L.USER_ID) DESC " +
-                        "LIMIT ?";
+        String sql = "SELECT L.FILM_ID, COUNT(L.USER_ID) as AMOUNT "
+                        + "FROM LIKES AS L "
+                        + "GROUP BY L.FILM_ID "
+                        + "ORDER BY COUNT(L.USER_ID) DESC "
+                        + "LIMIT ?";
         Map<Integer, Integer> result = new HashMap<>();
         try {
              jdbcTemplate.query(sql, (rs, rowNumber) -> Map.entry(rs.getInt("FILM_ID"), rs.getInt("AMOUNT")), amount).stream()

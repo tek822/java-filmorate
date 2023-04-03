@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.like;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,10 +40,10 @@ public class LikeInMemoryStorage implements LikeStorage {
     public Map<Integer, Integer> getMostPopular(int amount) {
         Map<Integer, Integer> newMap = new HashMap<>();
             likes.entrySet().stream()
-                .map(e -> (Map.entry(e.getKey(),e.getValue().size())))
-                .sorted((o1,o2) -> o2.getValue().compareTo(o1.getValue()))
+                .map(e -> (Map.entry(e.getKey(), e.getValue().size())))
+                .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .limit(amount)
-                .map(e->newMap.put(e.getKey(), e.getValue()))
+                .map(e -> newMap.put(e.getKey(), e.getValue()))
                 .close();
         return newMap;
     }

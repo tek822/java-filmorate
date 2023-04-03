@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.validators.UserValidator;
@@ -10,11 +9,11 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import static java.lang.Boolean.TRUE;
 
 @Slf4j
 @Service
@@ -91,7 +90,7 @@ public class UserService {
         return idsToUsers(common);
     }
 
-    private Set<User> idsToUsers (Set<Integer> ids) {
+    private Set<User> idsToUsers(Set<Integer> ids) {
         Set<User> set = new TreeSet<>(Comparator.comparingInt(User::getId));
         set.addAll(ids.stream()
                 .map(userStorage::getUser)

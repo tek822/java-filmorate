@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.storage.friend;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.SQLException;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,8 +47,8 @@ public class FriendDbStorage implements FriendStorage {
 
     @Override
     public Set<Integer> getCommonFriends(int user1Id, int user2id) {
-        String sql = "SELECT F.FRIEND_ID FROM FRIENDS AS F WHERE USER_ID = ? AND FRIEND_ID IN " +
-                "(SELECT U.FRIEND_ID FROM FRIENDS AS U WHERE USER_ID = ?)";
+        String sql = "SELECT F.FRIEND_ID FROM FRIENDS AS F WHERE USER_ID = ? AND FRIEND_ID IN "
+                + "(SELECT U.FRIEND_ID FROM FRIENDS AS U WHERE USER_ID = ?)";
         Collection<Integer> result = jdbcTemplate.query(sql, (rs, rowNumber) -> rs.getInt("FRIEND_ID"), user2id, user1Id);
         return new HashSet<>(result);
     }

@@ -10,10 +10,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -82,13 +80,5 @@ public class FilmService {
                 )
                  .limit(amount)
                  .collect(Collectors.toList());
-    }
-
-    private class LikeComparator implements Comparator<Film> {
-
-        @Override
-        public int compare(Film o1, Film o2) {
-            return likeStorage.getLikes(o2.getId()).size() - likeStorage.getLikes(o1.getId()).size();
-        }
     }
 }

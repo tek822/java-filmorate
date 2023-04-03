@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -79,8 +78,8 @@ public class FilmDbStorage implements FilmStorage {
         if (!containsFilm(id)) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
         }
-        String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?," +
-                " DURATION = ?,  RELEASEDATE = ?, RATING_ID = ? WHERE FILM_ID = ?";
+        String sql = "UPDATE FILMS SET NAME = ?, DESCRIPTION = ?,"
+                + " DURATION = ?,  RELEASEDATE = ?, RATING_ID = ? WHERE FILM_ID = ?";
         jdbcTemplate.update(sql,
                 film.getName(),
                 film.getDescription(),
@@ -114,7 +113,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(int id) {
-        String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?";// WHERE FILM_ID = ?";
+        String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?";
         Film film = null;
         try {
             Collection<Film> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeFilm(rs), id);
@@ -151,10 +150,10 @@ public class FilmDbStorage implements FilmStorage {
 
     private Set<Genre> getGenres(int id) {
         Collection<Genre> genres = null;
-        String sql = "SELECT F.GENRE_ID, G.GENRE " +
-                "FROM FILM_GENRES AS F " +
-                "JOIN GENRES AS G ON F.GENRE_ID = G.GENRE_ID " +
-                "WHERE F.FILM_ID = ?";
+        String sql = "SELECT F.GENRE_ID, G.GENRE "
+                + "FROM FILM_GENRES AS F "
+                + "JOIN GENRES AS G ON F.GENRE_ID = G.GENRE_ID "
+                + "WHERE F.FILM_ID = ?";
         try {
             genres = jdbcTemplate.query(sql,
                     (rs, rowNumber) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE")),
@@ -170,7 +169,7 @@ public class FilmDbStorage implements FilmStorage {
 
     }*/
 
-    private Map<String, Object> filmToMap (Film film) {
+    private Map<String, Object> filmToMap(Film film) {
         Map<String, Object> values = new HashMap<>();
         values.put("NAME", film.getName());
         values.put("DESCRIPTION", film.getDescription());
