@@ -84,12 +84,8 @@ public class FilmInMemoryStorage implements FilmStorage {
         if (film.getMpa() != null) {
             film.setMpa(ratingStorage.getRating(film.getMpa().getId()));
         }
-        if (film.getGenres() != null) {
-            for (Genre g : film.getGenres()) {
-                g.setName(genreStorage.getGenre(g.getId()).getName());
-            }
-        } else {
-            film.setGenres(new HashSet<>());
+        for (Genre g : film.getGenres()) {
+            g.setName(genreStorage.getGenre(g.getId()).getName());
         }
     }
 }

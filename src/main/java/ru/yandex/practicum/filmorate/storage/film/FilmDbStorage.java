@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +24,9 @@ public class FilmDbStorage implements FilmStorage {
     @Autowired
     @Qualifier("RatingDbStorage")
     private RatingStorage ratingStorage;
+    @Autowired
+    @Qualifier("GenreDbStorage")
+    private GenreStorage genreStorage;
 
     @Autowired
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
@@ -43,19 +47,16 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Exception in FilmDbStorage.addFilm: " + e.getMessage());
         }
 
-        if (film.getGenres() != null) {
-            String sqlClear = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
-            String sqlInsert = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-            try {
-                jdbcTemplate.update(sqlClear, film.getId());
-            } catch (RuntimeException e) {
-                log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
-            }
-            for (Genre g : film.getGenres()) {
-                jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
-            }
-        } else {
-            film.setGenres(new HashSet<>());
+        String sqlClear = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
+        String sqlInsert = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
+        try {
+            jdbcTemplate.update(sqlClear, film.getId());
+        } catch (RuntimeException e) {
+            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
+        }
+        for (Genre g : film.getGenres()) {
+            jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
+            g.setName(genreStorage.getGenre(g.getId()).getName());
         }
         return film;
     }
@@ -88,21 +89,19 @@ public class FilmDbStorage implements FilmStorage {
                 film.getMpa().getId(),
                 film.getId()
         );
-        if (film.getGenres() != null) {
-            String sqlClear = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
-            String sqlInsert = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
-            try {
-                jdbcTemplate.update(sqlClear, film.getId());
-            } catch (RuntimeException e) {
-                log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
-            }
-            for (Genre g : film.getGenres()) {
-                jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
-            }
-            film.setGenres(getGenres(film.getId()));
-        } else {
-            film.setGenres(new HashSet<Genre>());
+
+        String sqlClear = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
+        String sqlInsert = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
+        try {
+            jdbcTemplate.update(sqlClear, film.getId());
+        } catch (RuntimeException e) {
+            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
         }
+        for (Genre g : film.getGenres()) {
+            jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
+            g.setName(genreStorage.getGenre(g.getId()).getName());
+        }
+
         if (film.getMpa() != null) {
             int mpaId = film.getMpa().getId();
             film.setMpa(ratingStorage.getRating(mpaId));
@@ -121,13 +120,17 @@ public class FilmDbStorage implements FilmStorage {
         } catch (RuntimeException e) {
             log.info("Error getFilm with id = " + id + " : " +  e.getMessage());
         }
-        film.setGenres(getGenres(id));
-        return film;
+        if (film == null) {
+            throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
+        } else {
+            film.getGenres().addAll(getGenres(id));
+            return film;
+        }
     }
 
     @Override
     public List<Film> getFilms() {
-        String sql = "SELECT FILM_ID FROM FILMS";
+        String sql = "SELECT FILM_ID FROM FILMS ORDER BY FILM_ID";
         Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("FILM_ID"));
         return ids.stream()
                 .map(this::getFilm)
@@ -148,7 +151,7 @@ public class FilmDbStorage implements FilmStorage {
         return count.size();
     }
 
-    private Set<Genre> getGenres(int id) {
+    private Collection<Genre> getGenres(int id) {
         Collection<Genre> genres = null;
         String sql = "SELECT F.GENRE_ID, G.GENRE "
                 + "FROM FILM_GENRES AS F "
@@ -161,13 +164,9 @@ public class FilmDbStorage implements FilmStorage {
         } catch (RuntimeException e) {
             throw new ru.yandex.practicum.filmorate.exception.SQLException("SQL in FilmDbStorage.getGenres");
         }
-        Set<Genre> set = new HashSet<>(genres);
-        return set;
+        return genres;
     }
 
-    /*private getMpa(int id) {
-
-    }*/
 
     private Map<String, Object> filmToMap(Film film) {
         Map<String, Object> values = new HashMap<>();
@@ -180,8 +179,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film makeFilm(ResultSet resultSet) throws SQLException {
-        //int ratingId = resultSet.getInt("RATING_ID");
-        //Rating rating = ratingStorage.getRating(ratingId);
         Film film = Film.builder()
                 .id(resultSet.getInt("FILM_ID"))
                 .name(resultSet.getString("NAME"))

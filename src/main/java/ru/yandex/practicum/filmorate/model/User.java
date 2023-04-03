@@ -21,7 +21,7 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
-    final private Map<Integer, Boolean> friends = new HashMap<>();
+    private final Map<Integer, Boolean> friends = new HashMap<>();
 
     public Map<Integer, Boolean> getFriends() {
         return friends;
