@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller.validators;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.time.LocalDate;
 
 @Slf4j

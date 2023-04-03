@@ -15,7 +15,7 @@ public class FilmValidatorTest {
 
     @Test
     public void isNameValidTest() {
-        Film film = new Film();
+        Film film = new Film(0, null, null, null, 1, null);
         assertFalse(FilmValidator.isNameValid(film), "Название фильма не должно быть null");
 
         film.setName("");

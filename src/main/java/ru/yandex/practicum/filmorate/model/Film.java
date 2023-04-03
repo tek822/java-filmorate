@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.controller.validators.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
@@ -14,6 +16,8 @@ import java.util.Set;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Film {
     private int id;
     @NotBlank(message = "название фильма - обязательное поле")
