@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Target(value = {ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy=ReleaseDateConstraintValidator.class)
+@Constraint(validatedBy = ReleaseDateConstraintValidator.class)
 public @interface ReleaseDateConstraint {
         String message() default "ReleaseDateConstraint error";
         Class<?>[] groups() default {};

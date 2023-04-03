@@ -9,7 +9,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
-import ru.yandex.practicum.filmorate.exception.SQLException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
@@ -47,7 +46,7 @@ public class RatingStorageTest {
     }
 
     @Test
-    void getratingWithId1() {
+    void getratingWithId1Test() {
         Rating rating = ratingStorage.getRating(1);
 
         assertNotNull(rating, "ratingStorage не должен возвращать null");
@@ -56,7 +55,7 @@ public class RatingStorageTest {
     }
 
     @Test
-    void getratingWithUnknownId999() {
+    void getratingWithUnknownId999Test() {
         assertThrows(RatingNotFoundException.class, () -> ratingStorage.getRating(999), "ratingStorage должен вергуть null");
     }
 

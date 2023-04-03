@@ -53,7 +53,7 @@ public class FilmValidator {
     }
 
     static boolean isRatingValid(Film film) {
-        if (film.getMpa() == null || film.getMpa().getId() <=0) {
+        if (film.getMpa() == null || film.getMpa().getId() <= 0) {
             return false;
         }
         return true;

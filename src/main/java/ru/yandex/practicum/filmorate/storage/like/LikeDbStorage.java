@@ -46,7 +46,7 @@ public class LikeDbStorage implements LikeStorage {
         }
     }
 
-    @Override
+    /*@Override
     public Map<Integer, Integer> getMostPopular(int amount) {
         String sql = "SELECT L.FILM_ID, COUNT(L.USER_ID) as AMOUNT "
                         + "FROM LIKES AS L "
@@ -56,11 +56,11 @@ public class LikeDbStorage implements LikeStorage {
         Map<Integer, Integer> result = new HashMap<>();
         try {
              jdbcTemplate.query(sql, (rs, rowNumber) -> Map.entry(rs.getInt("FILM_ID"), rs.getInt("AMOUNT")), amount).stream()
-                     .map(e -> result.put(e.getKey(),e.getValue()));
+                     .map(e -> result.put(e.getKey(), e.getValue()));
             return result;
         } catch (RuntimeException e) {
             log.info("Ошибка при получении cписка популярных фильмов");
             throw new SQLException("Ошибка при получении cписка популярных фильмов \n" + e.getMessage());
         }
-    }
+    }*/
 }

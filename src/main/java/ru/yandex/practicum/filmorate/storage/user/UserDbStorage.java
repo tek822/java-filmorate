@@ -39,6 +39,8 @@ public class UserDbStorage implements UserStorage {
             log.info("Добавлен пользователь {}.", user);
         } catch (RuntimeException e) {
             log.info("Ошибка добавления пользователя UserDbStorage.addUser: " + e.getMessage());
+            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+                    "Ошибка добавления пользователя UserDbStorage.addUser: " + e.getMessage());
         }
         return user;
     }
@@ -58,8 +60,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User updateUser(User user) {
         int id = user.getId();
-        User oldUser = getUser(id);
-        if (oldUser == null) {
+        if (getUser(id) == null) {
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
         String sql = "UPDATE USERS SET NAME = ?, LOGIN = ?, EMAIL = ?, BIRTHDAY = ? WHERE USER_ID = ?";
@@ -102,7 +103,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        String sql = "SELECT USER_ID FROM USERS";
+        String sql = "SELECT USER_ID FROM USERS ORDER BY USER_ID";
         Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"));
         return ids.stream()
                 .map(this::getUser)
@@ -127,11 +128,17 @@ public class UserDbStorage implements UserStorage {
 
     private Map<Integer, Boolean> getFriends(int id) {
         String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ?";
-        Map<Integer, Boolean> friends = new HashMap<>();
+        Collection<Map.Entry<Integer, Boolean>> col;
         try {
-            Collection<Map.Entry<Integer, Boolean>> col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
+            col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
         } catch (RuntimeException e) {
             throw new UserNotFoundException("Не найдены друзья пользователя с id " + id);
+        }
+        Map<Integer, Boolean> friends = new HashMap<>();
+        for (Map.Entry e : col) {
+            int uid = (Integer) e.getKey();
+            boolean value = (Boolean) e.getValue();
+            friends.put(uid, value);
         }
         return friends;
     }

@@ -36,7 +36,7 @@ public class LikeInMemoryStorage implements LikeStorage {
         }
     }
 
-    @Override
+    /*@Override
     public Map<Integer, Integer> getMostPopular(int amount) {
         Map<Integer, Integer> newMap = new HashMap<>();
             likes.entrySet().stream()
@@ -46,5 +46,5 @@ public class LikeInMemoryStorage implements LikeStorage {
                 .map(e -> newMap.put(e.getKey(), e.getValue()))
                 .close();
         return newMap;
-    }
+    }*/
 }

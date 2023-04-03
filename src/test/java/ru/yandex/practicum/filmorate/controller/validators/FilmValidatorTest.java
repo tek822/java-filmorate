@@ -2,6 +2,8 @@ package ru.yandex.practicum.filmorate.controller.validators;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 
@@ -49,6 +51,15 @@ public class FilmValidatorTest {
 
         film.setReleaseDate(ERA_BEGIN.minusDays(1));
         assertFalse(FilmValidator.isReleaseDateValid(film), "Дата раелиза не может быть раньше " + ERA_BEGIN);
+    }
+
+    @Test
+    public void isRatingValidTest() {
+        Film film = new Film();
+        assertFalse(FilmValidator.isRatingValid(film), "Рейтинг фильма не может быть null");
+
+        film.setMpa(new Rating(0, ""));
+        assertFalse(FilmValidator.isRatingValid(film), "Рейтинг фильма не можетбыть <= 0");
     }
 
     @Test
