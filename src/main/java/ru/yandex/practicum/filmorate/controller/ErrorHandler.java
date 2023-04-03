@@ -42,13 +42,13 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserAlreadyExistsException(ValidationException e) {
+    public ErrorResponse handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleFilmAlreadyExistsException(ValidationException e) {
+    public ErrorResponse handleFilmAlreadyExistsException(FilmAlreadyExistsException e) {
         return new ErrorResponse(e.getMessage());
     }
 

@@ -57,21 +57,21 @@ public class LikeDbStorageTest {
 
     @Test
     void addLikeUnknownUserUnknownFilmTest() {
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1,1),
+        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк неизвестному фильму от несуществуещего пользователя");
     }
 
     @Test
     void addLikeKnownUserUnknownFilmTest() {
         userStorage.addUser(getUser(1));
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1,1),
+        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк неизвестному фильму");
     }
 
     @Test
     void addLikeUnknownUserKnownFilmTest() {
         filmStorage.addFilm(getFilm(1));
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1,1),
+        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк от несуществуещего пользователя");
     }
 
@@ -99,7 +99,7 @@ public class LikeDbStorageTest {
         filmStorage.addFilm(getFilm(1));
         likeStorage.addLike(1, 1);
         likeStorage.deleteLike(1, 1);
-        assertEquals(likeStorage.getLikes(1).size(), 1, "Должно быть 0 записей в базе лайков для фильма с id=1");
+        assertEquals(likeStorage.getLikes(1).size(), 0, "Должно быть 0 записей в базе лайков для фильма с id=1");
     }
 
     private Film getFilm(int id) {
