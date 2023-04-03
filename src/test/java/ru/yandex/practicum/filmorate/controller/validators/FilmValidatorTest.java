@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller.validators;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
-
 import java.time.LocalDate;
 import java.util.Arrays;
 
@@ -35,12 +34,12 @@ public class FilmValidatorTest {
         Arrays.fill(chars, (byte) 0x40);
         String description = new String(chars);
         film.setDescription(description);
-        assertFalse(FilmValidator.isDescriptionValid(film), "Описание фильма должно быть короче " +
-                MAX_DESCRIPTION_LENGTH + " символов");
+        assertFalse(FilmValidator.isDescriptionValid(film), "Описание фильма должно быть короче "
+                + MAX_DESCRIPTION_LENGTH + " символов");
 
         film.setDescription(description.substring(1));
-        assertTrue(FilmValidator.isDescriptionValid(film), "Описание фильма ровно " +
-                MAX_DESCRIPTION_LENGTH + " символов");
+        assertTrue(FilmValidator.isDescriptionValid(film), "Описание фильма ровно "
+                 + MAX_DESCRIPTION_LENGTH + " символов");
     }
 
     @Test

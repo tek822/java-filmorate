@@ -10,10 +10,10 @@ public class FilmValidator {
     static final int MAX_DESCRIPTION_LENGTH = 200;
     public static final LocalDate CINEMA_ERA_BEGIN = LocalDate.of(1895, 12, 28);
 
-    public static boolean isValid (Film film) {
+    public static boolean isValid(Film film) {
         log.info("Обрабатываются данные фильма {}", film);
-        return isNameValid(film) && isDescriptionValid(film) &&
-                isReleaseDateValid(film) && isDurationValid(film);
+        return isNameValid(film) && isDescriptionValid(film)
+                && isReleaseDateValid(film) && isDurationValid(film);
     }
 
     static boolean isNameValid(Film film) {
