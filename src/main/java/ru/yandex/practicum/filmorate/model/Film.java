@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.controller.validators.ReleaseDateConstraint;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
@@ -28,6 +29,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
+    @NotNull
     private Rating mpa;
     private final Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));
 }

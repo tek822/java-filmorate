@@ -45,6 +45,8 @@ public class FilmDbStorage implements FilmStorage {
             log.info("Добавлен фильм {}", film);
         } catch (RuntimeException e) {
             log.info("Exception in FilmDbStorage.addFilm: " + e.getMessage());
+            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+                    "Exception in FilmDbStorage.addFilm: " + e.getMessage());
         }
 
         String sqlClear = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
@@ -53,10 +55,16 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(sqlClear, film.getId());
         } catch (RuntimeException e) {
             log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
+            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+                    "Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
         }
         for (Genre g : film.getGenres()) {
             jdbcTemplate.update(sqlInsert, film.getId(), g.getId());
             g.setName(genreStorage.getGenre(g.getId()).getName());
+        }
+        if (film.getMpa() != null) {
+            int mpaId = film.getMpa().getId();
+            film.setMpa(ratingStorage.getRating(mpaId));
         }
         return film;
     }
@@ -96,6 +104,8 @@ public class FilmDbStorage implements FilmStorage {
             jdbcTemplate.update(sqlClear, film.getId());
         } catch (RuntimeException e) {
             log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
+            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+                    "Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
         }
         for (Genre g : film.getGenres()) {
             jdbcTemplate.update(sqlInsert, film.getId(), g.getId());

@@ -42,7 +42,7 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public List<Genre> getGenres() {
-        String sql = "SELECT G.GENRE_ID, G.GENRE FROM GENRES AS G";
+        String sql = "SELECT G.GENRE_ID, G.GENRE FROM GENRES AS G ORDER BY G.GENRE_ID";
         return new ArrayList<>(jdbcTemplate
                 .query(sql, (rs, rowNum) -> makeGenre(rs)));
     }

@@ -42,7 +42,7 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public List<Rating> getRatings() {
-        String sql = "SELECT R.RATING_ID, R.RATING FROM RATINGS AS R";
+        String sql = "SELECT R.RATING_ID, R.RATING FROM RATINGS AS R ORDER BY R.RATING_ID";
         return new ArrayList<>(jdbcTemplate
                 .query(sql, (rs, rowNum) -> makeRating(rs)));
     }

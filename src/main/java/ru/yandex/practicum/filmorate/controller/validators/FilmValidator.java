@@ -13,7 +13,7 @@ public class FilmValidator {
     public static boolean isValid(Film film) {
         log.info("Обрабатываются данные фильма {}", film);
         return isNameValid(film) && isDescriptionValid(film)
-                && isReleaseDateValid(film) && isDurationValid(film);
+                && isReleaseDateValid(film) && isDurationValid(film) && isRatingValid(film);
     }
 
     static boolean isNameValid(Film film) {
@@ -50,5 +50,12 @@ public class FilmValidator {
             log.debug("Ошибка в поле duration фильма {}", film);
         }
         return result;
+    }
+
+    static boolean isRatingValid(Film film) {
+        if (film.getMpa() == null || film.getMpa().getId() <=0) {
+            return false;
+        }
+        return true;
     }
 }
