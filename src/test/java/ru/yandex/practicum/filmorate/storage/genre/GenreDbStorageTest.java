@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest//(exclude = DataSourceAutoConfiguration.class)
 //@SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
-public class GenreStorageTest {
+public class GenreDbStorageTest {
     private EmbeddedDatabase embeddedDatabase;
     private JdbcTemplate jdbcTemplate;
     private GenreStorage genreStorage;
