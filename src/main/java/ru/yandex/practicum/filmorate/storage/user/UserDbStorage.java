@@ -11,11 +11,7 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -104,18 +100,57 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        String sql = "SELECT USER_ID FROM USERS ORDER BY USER_ID";
-        Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("USER_ID"));
-        return ids.stream()
-                .map(this::getUser)
-                .collect(Collectors.toList());
+        String sql = "SELECT * FROM USERS ORDER BY USER_ID";
+        List<User> users = new ArrayList<>();
+
+        try {
+            users.addAll(jdbcTemplate.query(sql, (rs, rowNum) -> makeUser(rs)));
+        } catch (RuntimeException e) {
+            throw new FilmorateSQLException("Ошибка получения полного списка пользователей.\n" + e.getMessage());
+        }
+
+        Map<Integer, Map<Integer, Boolean>> friends = getAllFriends();
+        for (User user : users) {
+            if (friends.containsKey(user.getId())) {
+                user.getFriends().putAll(friends.get(user.getId()));
+            }
+        }
+        return users;
+    }
+
+    private Map<Integer, Map<Integer, Boolean>> getAllFriends() {
+        String sqlFriends = "SELECT * FROM FRIENDS ORDER BY USER_ID, FRIEND_ID";
+        Map<Integer, Map<Integer, Boolean>> friends;
+        try {
+             friends =
+                    jdbcTemplate.query(sqlFriends,
+                            rs -> {
+                                Map<Integer, Map<Integer, Boolean>> result = new HashMap<>();
+                                while (rs.next()) {
+                                    int uid = rs.getInt("USER_ID");
+                                    int fid = rs.getInt("FRIEND_ID");
+                                    boolean status = rs.getBoolean("STATUS");
+                                    if (result.containsKey(uid)) {
+                                        result.get(uid).put(fid, status);
+                                    } else {
+                                        result.put(uid, new HashMap<>());
+                                        result.get(uid).put(fid, status);
+                                    }
+                                }
+                                return result;
+                            }
+                    );
+        } catch (RuntimeException e) {
+            throw new FilmorateSQLException("Ошибка получения полного списка друзей.\n" + e.getMessage());
+        }
+        return friends == null ? new HashMap<>() : friends;
     }
 
     @Override
     public int size() {
-        String sql = "SELECT COUNT(U.USER_ID) AS COUNT FROM USERS AS U GROUP BY U.USER_ID";
-        Collection<Integer> count = jdbcTemplate.query(sql, (rs, rowNumber) -> getCount(rs));
-        return count.size();
+        String sql = "SELECT COUNT(*) FROM USERS";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        return count == null ? 0 : count;
     }
 
     private Map<String, Object> userToMap(User user) {
@@ -129,23 +164,21 @@ public class UserDbStorage implements UserStorage {
 
     private Map<Integer, Boolean> getFriends(int id) {
         String sql = "SELECT F.FRIEND_ID, F.STATUS FROM FRIENDS AS F WHERE F.USER_ID = ?";
-        Collection<Map.Entry<Integer, Boolean>> col;
+        List<Map.Entry<Integer, Boolean>> col = new ArrayList<>();
         try {
-            col = jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id);
+            col.addAll(jdbcTemplate.query(sql, (rs, rowNumber) -> getFriend(rs), id));
         } catch (RuntimeException e) {
             throw new UserNotFoundException("Не найдены друзья пользователя с id " + id);
         }
         Map<Integer, Boolean> friends = new HashMap<>();
         for (Map.Entry e : col) {
-            int uid = (Integer) e.getKey();
-            boolean value = (Boolean) e.getValue();
-            friends.put(uid, value);
+            if (e != null) {
+                int uid = (Integer) e.getKey();
+                boolean value = (Boolean) e.getValue();
+                friends.put(uid, value);
+            }
         }
         return friends;
-    }
-
-    private Integer getCount(ResultSet resultSet) throws SQLException {
-        return resultSet.getInt("COUNT");
     }
 
     private Map.Entry<Integer, Boolean> getFriend(ResultSet resultSet) throws SQLException {

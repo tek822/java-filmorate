@@ -49,9 +49,9 @@ public class RatingDbStorage implements RatingStorage {
 
     @Override
     public int size() {
-            String sql = "SELECT COUNT(R.RATING_ID) AS COUNT FROM RATINGS AS R";
-            Collection<Boolean> count = jdbcTemplate.query(sql, (rs, rowNumber) -> true);
-            return count.size();
+            String sql = "SELECT COUNT(*) FROM RATINGS";
+            Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+            return count == null ? 0 : count;
     }
 
     private Rating makeRating(ResultSet rs) throws SQLException {

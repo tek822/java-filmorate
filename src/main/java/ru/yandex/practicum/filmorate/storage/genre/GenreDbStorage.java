@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -49,13 +48,12 @@ public class GenreDbStorage implements GenreStorage {
 
     @Override
     public int size() {
-        String sql = "SELECT COUNT(G.GENRE_ID) AS COUNT FROM GENRES AS G";
-        Collection<Boolean> count = jdbcTemplate.query(sql, (rs, rowNumber) -> true);
-        return count.size();
+        String sql = "SELECT COUNT(*) FROM GENRES";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        return count == null ? 0 : count;
     }
 
     private Genre makeGenre(ResultSet rs) throws SQLException {
         return new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE"));
     }
-
 }

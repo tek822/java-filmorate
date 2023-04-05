@@ -10,12 +10,12 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.rating.RatingStorage;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -123,7 +123,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film getFilm(int id) {
-        String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?";
+        String sql = "SELECT * "
+                    + "FROM FILMS AS F "
+                    + "JOIN RATINGS AS R ON F.RATING_ID = R.RATING_ID "
+                    + "WHERE FILM_ID = ?";
         Film film = null;
         try {
             Collection<Film> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeFilm(rs), id);
@@ -141,11 +144,53 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms() {
-        String sql = "SELECT FILM_ID FROM FILMS ORDER BY FILM_ID";
-        Collection<Integer> ids = jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("FILM_ID"));
-        return ids.stream()
-                .map(this::getFilm)
-                .collect(Collectors.toList());
+        String sql = "SELECT * "
+                + "FROM FILMS AS F "
+                + "JOIN RATINGS AS R ON F.RATING_ID = R.RATING_ID ";
+        List<Film> films = new ArrayList<>();
+
+        try {
+            films.addAll(jdbcTemplate.query(sql, (rs, rowNumber) -> makeFilm(rs)));
+        } catch (RuntimeException e) {
+            log.info("Error getFilms {}", e.getMessage());
+        }
+
+        Map<Integer, List<Genre>> genres = getAllFilmGenres();
+        for (Film film : films) {
+            if (genres.containsKey(film.getId())) {
+                film.getGenres().addAll(genres.get(film.getId()));
+            }
+        }
+        return films;
+    }
+
+    private Map<Integer, List<Genre>> getAllFilmGenres() {
+        String sql = "SELECT * "
+                + "FROM FILM_GENRES AS F "
+                + "JOIN GENRES AS G ON F.GENRE_ID = G.GENRE_ID";
+        Map<Integer, List<Genre>> allGenres;
+        try {
+            allGenres = jdbcTemplate.query(sql,
+                    rs -> {
+                        Map<Integer, List<Genre>> result = new HashMap<>();
+                        while (rs.next()) {
+                            int fid = rs.getInt("FILM_ID");
+                            int gid = rs.getInt("GENRE_ID");
+                            String genre = rs.getString("GENRE");
+
+                            if (result.containsKey(fid)) {
+                                result.get(fid).add(new Genre(gid, genre));
+                            } else {
+                                result.put(fid, new ArrayList<>());
+                                result.get(fid).add(new Genre(gid, genre));
+                            }
+                        }
+                        return result;
+                    });
+        } catch (RuntimeException e) {
+            throw new FilmNotFoundException("Ошибка получения полного списка жанров всех фильмов.\n" + e.getMessage());
+        }
+        return allGenres;
     }
 
     @Override
@@ -157,9 +202,9 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public int size() {
-        String sql = "SELECT COUNT(F.FILM_ID) AS COUNT FROM FILMS AS F GROUP BY F.FILM_ID";
-        Collection<Integer> count = jdbcTemplate.query(sql, (rs, rowNumber) -> rs.getInt("COUNT"));
-        return count.size();
+        String sql = "SELECT COUNT(*) FROM FILMS";
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+        return count == null ? 0 : count;
     }
 
     private Collection<Genre> getGenres(int id) {
@@ -196,7 +241,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(resultSet.getString("DESCRIPTION"))
                 .duration(resultSet.getInt("DURATION"))
                 .releaseDate(resultSet.getDate("RELEASEDATE").toLocalDate())
-                .mpa(ratingStorage.getRating(resultSet.getInt("RATING_ID")))
+                .mpa(new Rating(resultSet.getInt("RATING_ID"), resultSet.getString("RATING")))
                 .build();
         return film;
     }

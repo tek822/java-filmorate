@@ -89,8 +89,7 @@ public class LikeDbStorageTest {
         userStorage.addUser(getUser(1));
         filmStorage.addFilm(getFilm(1));
         likeStorage.addLike(1, 1);
-        likeStorage.addLike(1, 1);
-        assertEquals(likeStorage.getLikes(1).size(), 1, "Должна быть 1 запись в базе лайков для фильма с id=1");
+        assertThrows(FilmorateSQLException.class, () -> likeStorage.addLike(1, 1));
     }
 
     @Test

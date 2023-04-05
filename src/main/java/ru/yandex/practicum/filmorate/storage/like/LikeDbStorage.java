@@ -24,7 +24,7 @@ public class LikeDbStorage implements LikeStorage {
             jdbcTemplate.update(sql, fid, uid);
         } catch (RuntimeException e) {
             log.info("Ошибка добавления оценки\n{}", e.getMessage());
-            throw new FilmorateSQLException("Ошбка добавление оуенки " + fid + " ," + uid + ".\n" + e.getMessage());
+            throw new FilmorateSQLException("Ошибка добавление оценки " + fid + " ," + uid + ".\n" + e.getMessage());
         }
     }
 
@@ -45,22 +45,4 @@ public class LikeDbStorage implements LikeStorage {
             throw new FilmorateSQLException("Ошибка при получении оценки фильма с id : " + fid + "\n" + e.getMessage());
         }
     }
-
-    /*@Override
-    public Map<Integer, Integer> getMostPopular(int amount) {
-        String sql = "SELECT L.FILM_ID, COUNT(L.USER_ID) as AMOUNT "
-                        + "FROM LIKES AS L "
-                        + "GROUP BY L.FILM_ID "
-                        + "ORDER BY COUNT(L.USER_ID) DESC "
-                        + "LIMIT ?";
-        Map<Integer, Integer> result = new HashMap<>();
-        try {
-             jdbcTemplate.query(sql, (rs, rowNumber) -> Map.entry(rs.getInt("FILM_ID"), rs.getInt("AMOUNT")), amount).stream()
-                     .map(e -> result.put(e.getKey(), e.getValue()));
-            return result;
-        } catch (RuntimeException e) {
-            log.info("Ошибка при получении cписка популярных фильмов");
-            throw new SQLException("Ошибка при получении cписка популярных фильмов \n" + e.getMessage());
-        }
-    }*/
 }
