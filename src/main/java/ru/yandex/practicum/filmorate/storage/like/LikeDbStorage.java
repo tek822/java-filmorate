@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.SQLException;
+import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import java.util.*;
 
 @Slf4j
@@ -23,8 +23,8 @@ public class LikeDbStorage implements LikeStorage {
         try {
             jdbcTemplate.update(sql, fid, uid);
         } catch (RuntimeException e) {
-            log.info("Ошибка добавления оценки\n" +  e.getMessage());
-            throw new SQLException("Ошбка добавление оуенки " + fid + " ," + uid + ".\n" + e.getMessage());
+            log.info("Ошибка добавления оценки\n{}", e.getMessage());
+            throw new FilmorateSQLException("Ошбка добавление оуенки " + fid + " ," + uid + ".\n" + e.getMessage());
         }
     }
 
@@ -41,8 +41,8 @@ public class LikeDbStorage implements LikeStorage {
             Collection<Integer> result = jdbcTemplate.query(sql, (rs, rowNumber) -> rs.getInt("USER_ID"), fid);
             return new HashSet<>(result);
         } catch (RuntimeException e) {
-            log.info("Ошибка при получении оценки фильма с id : " + fid);
-            throw new SQLException("Ошибка при получении оценки фильма с id : " + fid + "\n" + e.getMessage());
+            log.info("Ошибка при получении оценки фильма с id : {}", fid);
+            throw new FilmorateSQLException("Ошибка при получении оценки фильма с id : " + fid + "\n" + e.getMessage());
         }
     }
 

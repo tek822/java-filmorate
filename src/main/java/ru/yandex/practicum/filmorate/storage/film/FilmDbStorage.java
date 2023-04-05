@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
@@ -44,8 +45,8 @@ public class FilmDbStorage implements FilmStorage {
             film.setId(id);
             log.info("Добавлен фильм {}", film);
         } catch (RuntimeException e) {
-            log.info("Exception in FilmDbStorage.addFilm: " + e.getMessage());
-            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+            log.info("Exception in FilmDbStorage.addFilm: {}", e.getMessage());
+            throw new FilmorateSQLException(
                     "Exception in FilmDbStorage.addFilm: " + e.getMessage());
         }
 
@@ -54,8 +55,8 @@ public class FilmDbStorage implements FilmStorage {
         try {
             jdbcTemplate.update(sqlClear, film.getId());
         } catch (RuntimeException e) {
-            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
-            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID {}", film.getId());
+            throw new FilmorateSQLException(
                     "Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
         }
         for (Genre g : film.getGenres()) {
@@ -103,8 +104,8 @@ public class FilmDbStorage implements FilmStorage {
         try {
             jdbcTemplate.update(sqlClear, film.getId());
         } catch (RuntimeException e) {
-            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
-            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+            log.info("Ошибка при очистке таблицы FILM_GENRES для FILM_ID {}", film.getId());
+            throw new FilmorateSQLException(
                     "Ошибка при очистке таблицы FILM_GENRES для FILM_ID " + film.getId());
         }
         for (Genre g : film.getGenres()) {
@@ -128,7 +129,7 @@ public class FilmDbStorage implements FilmStorage {
             Collection<Film> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeFilm(rs), id);
             film = collection.stream().findAny().get();
         } catch (RuntimeException e) {
-            log.info("Error getFilm with id = " + id + " : " +  e.getMessage());
+            log.info("Error getFilm with id = {} : {}", id, e.getMessage());
         }
         if (film == null) {
             throw new FilmNotFoundException("Фильм с id: " + id + " отсутствует");
@@ -172,7 +173,7 @@ public class FilmDbStorage implements FilmStorage {
                     (rs, rowNumber) -> new Genre(rs.getInt("GENRE_ID"), rs.getString("GENRE")),
                     id);
         } catch (RuntimeException e) {
-            throw new ru.yandex.practicum.filmorate.exception.SQLException("SQL in FilmDbStorage.getGenres");
+            throw new FilmorateSQLException("SQL in FilmDbStorage.getGenres");
         }
         return genres;
     }

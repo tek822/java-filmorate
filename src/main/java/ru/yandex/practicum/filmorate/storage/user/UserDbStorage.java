@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
@@ -38,8 +39,8 @@ public class UserDbStorage implements UserStorage {
             user.setId(id);
             log.info("Добавлен пользователь {}.", user);
         } catch (RuntimeException e) {
-            log.info("Ошибка добавления пользователя UserDbStorage.addUser: " + e.getMessage());
-            throw new ru.yandex.practicum.filmorate.exception.SQLException(
+            log.info("Ошибка добавления пользователя UserDbStorage.addUser: {}", e.getMessage());
+            throw new FilmorateSQLException(
                     "Ошибка добавления пользователя UserDbStorage.addUser: " + e.getMessage());
         }
         return user;
@@ -86,7 +87,7 @@ public class UserDbStorage implements UserStorage {
             Collection<User> collection = jdbcTemplate.query(sql, (rs, rowNumber) -> makeUser(rs), id);
             user = collection.stream().findAny().get();
         } catch (RuntimeException e) {
-            log.info("Error getUser with id = " + id + " : " +  e.getMessage());
+            log.info("Error getUser with id = {} : {}", id, e.getMessage());
             throw new UserNotFoundException("Пользователь с id: " + id + " отсутствует");
         }
         Map<Integer, Boolean> friendsFromDb = getFriends(id);
@@ -148,8 +149,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     private Map.Entry<Integer, Boolean> getFriend(ResultSet resultSet) throws SQLException {
-        log.info("resultSet : " + resultSet.toString());
-        log.info("FRIEND_ID : " + resultSet.getInt("FRIEND_ID"));
+        log.info("resultSet : {}", resultSet.toString());
+        log.info("FRIEND_ID : {}", resultSet.getInt("FRIEND_ID"));
         return Map.entry(resultSet.getInt("FRIEND_ID"), resultSet.getBoolean("STATUS"));
     }
 

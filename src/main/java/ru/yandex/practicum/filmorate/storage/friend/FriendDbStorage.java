@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.SQLException;
+import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,8 +27,8 @@ public class FriendDbStorage implements FriendStorage {
         try {
             jdbcTemplate.update(sql, userId, friendId);
         } catch (RuntimeException e) {
-            log.info("Ошибка добавления друга\n" +  e.getMessage());
-            throw new SQLException("Ошбка добавление друга " + userId + " ," + friendId + ".\n" + e.getMessage());
+            log.info("Ошибка добавления друга\n{}", e.getMessage());
+            throw new FilmorateSQLException("Ошбка добавление друга " + userId + " ," + friendId + ".\n" + e.getMessage());
         }
     }
 

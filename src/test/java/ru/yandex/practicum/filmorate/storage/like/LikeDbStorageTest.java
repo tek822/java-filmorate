@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import ru.yandex.practicum.filmorate.exception.SQLException;
+import ru.yandex.practicum.filmorate.exception.FilmorateSQLException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
@@ -57,21 +57,21 @@ public class LikeDbStorageTest {
 
     @Test
     void addLikeUnknownUserUnknownFilmTest() {
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
+        assertThrows(FilmorateSQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк неизвестному фильму от несуществуещего пользователя");
     }
 
     @Test
     void addLikeKnownUserUnknownFilmTest() {
         userStorage.addUser(getUser(1));
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
+        assertThrows(FilmorateSQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк неизвестному фильму");
     }
 
     @Test
     void addLikeUnknownUserKnownFilmTest() {
         filmStorage.addFilm(getFilm(1));
-        assertThrows(SQLException.class, () -> likeStorage.addLike(1, 1),
+        assertThrows(FilmorateSQLException.class, () -> likeStorage.addLike(1, 1),
                 "Нельзя добавить лайк от несуществуещего пользователя");
     }
 
