@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller.validators;
 
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -15,7 +16,7 @@ public class FilmValidatorTest {
 
     @Test
     public void isNameValidTest() {
-        Film film = new Film();
+        Film film = new Film(0, null, null, null, 1, null);
         assertFalse(FilmValidator.isNameValid(film), "Название фильма не должно быть null");
 
         film.setName("");
@@ -35,12 +36,12 @@ public class FilmValidatorTest {
         Arrays.fill(chars, (byte) 0x40);
         String description = new String(chars);
         film.setDescription(description);
-        assertFalse(FilmValidator.isDescriptionValid(film), "Описание фильма должно быть короче " +
-                MAX_DESCRIPTION_LENGTH + " символов");
+        assertFalse(FilmValidator.isDescriptionValid(film), "Описание фильма должно быть короче "
+                + MAX_DESCRIPTION_LENGTH + " символов");
 
         film.setDescription(description.substring(1));
-        assertTrue(FilmValidator.isDescriptionValid(film), "Описание фильма ровно " +
-                MAX_DESCRIPTION_LENGTH + " символов");
+        assertTrue(FilmValidator.isDescriptionValid(film), "Описание фильма ровно "
+                 + MAX_DESCRIPTION_LENGTH + " символов");
     }
 
     @Test
@@ -50,6 +51,15 @@ public class FilmValidatorTest {
 
         film.setReleaseDate(ERA_BEGIN.minusDays(1));
         assertFalse(FilmValidator.isReleaseDateValid(film), "Дата раелиза не может быть раньше " + ERA_BEGIN);
+    }
+
+    @Test
+    public void isRatingValidTest() {
+        Film film = new Film();
+        assertFalse(FilmValidator.isRatingValid(film), "Рейтинг фильма не может быть null");
+
+        film.setMpa(new Rating(0, ""));
+        assertFalse(FilmValidator.isRatingValid(film), "Рейтинг фильма не можетбыть <= 0");
     }
 
     @Test

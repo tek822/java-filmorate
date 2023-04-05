@@ -1,17 +1,25 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.yandex.practicum.filmorate.controller.validators.ReleaseDateConstraint;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.TreeSet;
 import java.util.Set;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Film {
     private int id;
     @NotBlank(message = "название фильма - обязательное поле")
@@ -22,17 +30,31 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration; //minutes
-    final private Set<Integer> likes = new HashSet<>();
+    @NotNull
+    private Rating mpa;
+    private final Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));
 
-    public Set<Integer> getLikes() {
-        return likes;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Film film = (Film) o;
+
+        if (duration != film.duration) return false;
+        if (!name.equals(film.name)) return false;
+        if (!Objects.equals(description, film.description)) return false;
+        if (!releaseDate.equals(film.releaseDate)) return false;
+        return mpa.equals(film.mpa);
     }
 
-    public void addLike(int uid) {
-        likes.add(uid);
-    }
-
-    public boolean deleteLike(int uid) {
-        return likes.remove(uid);
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + releaseDate.hashCode();
+        result = 31 * result + duration;
+        result = 31 * result + mpa.hashCode();
+        return result;
     }
 }
