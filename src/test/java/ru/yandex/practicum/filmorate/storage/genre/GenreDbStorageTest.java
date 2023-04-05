@@ -107,7 +107,7 @@ public class GenreDbStorageTest {
     }
 
     @AfterEach
-     void release() {
+    void release() {
      embeddedDatabase.shutdown();
     }
 
